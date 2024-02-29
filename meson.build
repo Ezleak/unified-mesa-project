@@ -2143,9 +2143,6 @@ elif with_glx == 'dri'
     endif
   endif
 endif
-if dep_libdrm.found()
-  gl_priv_reqs += 'libdrm >= 2.4.75'
-endif
 
 gl_priv_libs = []
 if dep_thread.found()
