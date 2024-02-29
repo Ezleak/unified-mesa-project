@@ -73,8 +73,6 @@ jobs:
             -Dvulkan-drivers=panfrost \
             -Db_lto=true
           ninja -C "build-android-turnip" install
-          cd /tmp/mesa/lib
-          mv libOSMesa.so libOSMesa_znL.so
       - name: Upload libraries
         uses: actions/upload-artifact@v2
         with:
