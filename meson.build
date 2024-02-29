@@ -1625,6 +1625,18 @@ foreach d : _libdrm_checks
 endforeach
 
 with_gallium_drisw_kms = false
+dep_libdrm = dependency(
+  'libdrm', version : '>=' + _drm_ver,
+  # GNU/Hurd includes egl_dri2, without drm.
+  required : (with_dri2 and host_machine.system() != 'gnu') or with_dri3
+)
+if dep_libdrm.found()
+  pre_args += '-DHAVE_LIBDRM'
+  if with_dri_platform == 'drm' and with_dri
+    with_gallium_drisw_kms = true
+  endif
+endif
+
 dep_libudev = dependency('libudev', required : false)
 if dep_libudev.found()
   pre_args += '-DHAVE_LIBUDEV'
@@ -2142,6 +2154,9 @@ elif with_glx == 'dri'
       gl_priv_reqs += 'xxf86vm'
     endif
   endif
+endif
+if dep_libdrm.found()
+  gl_priv_reqs += 'libdrm >= 2.4.75'
 endif
 
 gl_priv_libs = []
