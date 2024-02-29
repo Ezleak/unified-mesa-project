@@ -56,23 +56,11 @@ jobs:
             -Dglx=disabled \
             -Dopengl=true \
             -Dosmesa=true \
-            -Dvulkan-drivers=panfrost \
-            -Dgallium-drivers=zink,virgl \
+            -Dvulkan-drivers= \
+            -Dgallium-drivers=zink,virgl,panfrost \
             -Dshared-glapi=false \
             -Dbuildtype=release
           ninja -C "build-android" install
-          envsubst <android-turnip-${{matrix.arch}} >build-crossfile-turnip
-          meson setup "build-android-turnip" \
-            --cross-file "build-crossfile-turnip" \
-            -Dbuildtype=release \
-            --prefix=/tmp/mesa \
-            -Dplatforms=android \
-            -Dplatform-sdk-version=33 \
-            -Dandroid-stub=true \
-            -Dgallium-drivers= \
-            -Dvulkan-drivers=panfrost \
-            -Db_lto=true
-          ninja -C "build-android-turnip" install
       - name: Upload libraries
         uses: actions/upload-artifact@v2
         with:
