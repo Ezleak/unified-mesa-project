@@ -37,9 +37,10 @@ jobs:
             -Damdgpu=disabled \
             -Dnouveau=disabled \
             -Dvmwgfx=disabled \
-            -Dfreedreno=disabled \
+            -Dfreedreno=enabled \
             -Dvc4=disabled \
             -Detnaviv=disabled \
+            -Dfreedreno-kgsl=true
           ninja -C "build-android" install
           cd ..
           envsubst <android-${{matrix.arch}} >build-crossfile
@@ -47,7 +48,7 @@ jobs:
             --prefix=/tmp/mesa \
             --cross-file "build-crossfile" \
             -Dplatforms=android \
-            -Dplatform-sdk-version=33 \
+            -Dplatform-sdk-version=25 \
             -Dandroid-stub=true \
             -Dxlib-lease=disabled \
             -Degl=disabled \
@@ -55,11 +56,25 @@ jobs:
             -Dglx=disabled \
             -Dopengl=true \
             -Dosmesa=true \
-            -Dvulkan-drivers=virtio-experimental \
+            -Dvulkan-drivers=microsoft-experimental \
             -Dgallium-drivers=zink,virgl \
             -Dshared-glapi=false \
             -Dbuildtype=release
           ninja -C "build-android" install
+          envsubst <android-turnip-${{matrix.arch}} >build-crossfile-turnip
+          meson setup "build-android-turnip" \
+            --cross-file "build-crossfile-turnip" \
+            -Dbuildtype=release \
+            --prefix=/tmp/mesa \
+            -Dplatforms=android \
+            -Dplatform-sdk-version=33 \
+            -Dandroid-stub=true \
+            -Dgallium-drivers= \
+            -Dvulkan-drivers=microsoft-experimental \
+            -Db_lto=true
+          ninja -C "build-android-turnip" install
+          cd /tmp/mesa/lib
+          mv libOSMesa.so libOSMesa_znL.so
       - name: Upload libraries
         uses: actions/upload-artifact@v2
         with:
